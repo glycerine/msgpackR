@@ -12,9 +12,9 @@ This is the library that can serialize or deserialize MessagePack format data.
 \tabular{ll}{
 Package: \tab MessagePack for R\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2013-05-19\cr
-License: \tab BSD\cr
+Version: \tab 1.1\cr
+Date: \tab 2013-11-21\cr
+License: \tab BSD_2_clause + file LICENSE\cr
 }
 
 }

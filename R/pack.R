@@ -254,6 +254,10 @@ function(data) {
 	else if ( is.ordered(data) ) {
 		# not implemented
 	}
+	# list
+	else if ( is.list(data) ) {
+		result <- c(result, .pack_array(data))
+	}
 	# atomic data type
 	else {		
 		# NULL
