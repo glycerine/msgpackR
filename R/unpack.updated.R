@@ -92,7 +92,7 @@ function(str) {
 
 	.unpack_float32 <- function() {
 		# R supports not "float" but "double".
-		return(.unpack_double())
+		return(.unpack_float64())
 	}
 
 	.unpack_float64 <- function() {
@@ -462,6 +462,18 @@ function(str) {
 		return(data)
 	}
 
+    ## todo
+	.unpack_ext8 <- function() { stop("todo: implement .unpack_ext8") }
+	.unpack_ext16 <- function() { stop("todo: implement .unpack_ext16") }
+	.unpack_ext32 <- function() { stop("todo: implement .unpack_ext32") }
+	.unpack_fixext1 <- function() { stop("todo: implement .unpack_fixext1") }
+	.unpack_fixext2 <- function() { stop("todo: implement .unpack_fixext2") }
+	.unpack_fixext4 <- function() { stop("todo: implement .unpack_fixext4") }
+	.unpack_fixext8 <- function() { stop("todo: implement .unpack_fixext8") }
+	.unpack_fixext16 <- function() { stop("todo: implement .unpack_fixext16") }
+
+    ## end todo
+    
 	.unpack_data <- function() {
 		if ( is.null(e$.msgpack_data) ) {
 			return(NULL)
