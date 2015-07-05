@@ -239,6 +239,64 @@ function(str) {
 		return(result)
 	}
 
+
+	.unpack_bin8 <- function() {
+		result <- list()
+		
+		e$.msgpack_index <- e$.msgpack_index + 1		
+        N <- as.integer(e$.msgpack_data[e$.msgpack_index])
+
+        e$.msgpack_index <- e$.msgpack_index + 1
+		
+		for ( i in 1:N ) {
+			result[[i]] <- e$.msgpack_data[e$.msgpack_index]
+			e$.msgpack_index <- e$.msgpack_index + 1
+		}
+		result <- unlist(result)
+		
+		return(result)
+	}
+
+	.unpack_bin16 <- function() {
+		result <- list()
+		N <- 0
+		
+		e$.msgpack_index <- e$.msgpack_index + 1
+		
+		for ( i in seq(8,0,-8) ) {
+			N <- N + as.integer(e$.msgpack_data[e$.msgpack_index])*2^i
+			e$.msgpack_index <- e$.msgpack_index + 1
+		}
+		
+		for ( i in 1:N ) {
+			result[[i]] <- e$.msgpack_data[e$.msgpack_index]
+			e$.msgpack_index <- e$.msgpack_index + 1
+		}
+		result <- unlist(result)
+		
+		return(result)
+	}    
+    
+	.unpack_bin32 <- function() {
+		result <- list()
+		N <- 0
+		
+		e$.msgpack_index <- e$.msgpack_index + 1
+		
+		for ( i in seq(24,0,-8) ) {
+			N <- N + as.integer(e$.msgpack_data[e$.msgpack_index])*2^i
+			e$.msgpack_index <- e$.msgpack_index + 1
+		}
+		
+		for ( i in 1:N ) {
+			result[[i]] <- e$.msgpack_data[e$.msgpack_index]
+			e$.msgpack_index <- e$.msgpack_index + 1
+		}
+		result <- unlist(result)
+		
+		return(result)
+	}
+    
 	.unpack_str8 <- function() {
 		result <- list()
 		
@@ -255,7 +313,7 @@ function(str) {
 		
 		return(result)
 	}
-    
+
 	.unpack_str16 <- function() {
 		result <- list()
 		N <- 0
