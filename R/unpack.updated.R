@@ -509,7 +509,7 @@ function(str) {
 			return(.unpack_fixext1())
           }
    		# fixext2
-		else if ( e$.msgpack_data[e$.msgpack_index] == as.raw(0xD) ) {
+		else if ( e$.msgpack_data[e$.msgpack_index] == as.raw(0xD5) ) {
 			return(.unpack_fixext2())
           }
    		# fixext4
