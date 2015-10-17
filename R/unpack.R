@@ -72,9 +72,7 @@ function(str) {
 
 		result_byte <- .unpack_checkclass(result_byte)
 		
-		for ( i in 1:length(result_byte) ) {
-			result <- paste(result, result_byte[i], sep="")
-		}
+        result <- paste(result_byte, sep="", collapse="")
 
 		return(result)
 	}
@@ -318,7 +316,9 @@ function(str) {
 			e$.msgpack_index <- e$.msgpack_index + 1
 		}
 		result <- .unpack_checkclass(result)
-		
+
+        result <- paste(result, sep="", collapse="")
+        
 		return(result)
 	}
 
@@ -338,7 +338,9 @@ function(str) {
 			e$.msgpack_index <- e$.msgpack_index + 1
 		}
 		result <- .unpack_checkclass(result)
-		
+
+        result <- paste(result, sep="", collapse="")
+        
 		return(result)
 	}
 
@@ -358,7 +360,9 @@ function(str) {
 			e$.msgpack_index <- e$.msgpack_index + 1
 		}
 		result <- .unpack_checkclass(result)
-		
+
+        result <- paste(result, sep="", collapse="")
+        
 		return(result)
 	}
 

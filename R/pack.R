@@ -207,20 +207,18 @@ function(data) {
 
 	.pack_str <- function(data) {
 		n <- length(data)
-        np <- pack(n)
-        enclen <- np[2:length(np)]
         
 		if ( n <= 31 ) {
           h <- (as.raw(0xA0) | as.raw(n)) # fixstr
         }
 		else if ( n <= 2^8-1 ) {
-          h <- c(as.raw(0xD9),enclen) # str8 
+          h <- c(as.raw(0xD9),as.raw(n)) # str8 
         }
 		else if ( n <= 2^16-1 ) {
-          h <- c(as.raw(0xDA),enclen) # str16
+          h <- c(as.raw(0xDA),as.raw(n/2^8), as.raw(n%%2^8)) # str16
 		}
 		else if ( n <= 2^32-1 ) {
-          h <- c(as.raw(0xDB),enclen) # str32
+          h <- c(as.raw(0xDB), as.raw(n/2^24), as.raw((n%%2^24)/2^16), as.raw((n%%2^16)/2^8), as.raw(n%%2^8)) # str32
 		} else {
           stop("character data longer than 2^32 -1 bytes cannot be msgpack encoded.")
         }
