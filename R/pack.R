@@ -1,3 +1,7 @@
+
+require(bit64)
+require(Rmpfr)
+
 pack <-
 function(data) {
 	.pack_nil <- function() {
@@ -33,8 +37,11 @@ function(data) {
 	}
 
 	.pack_uint64 <- function(value) {
-		return(c(as.raw(0xCF), as.raw(value/2^56), as.raw((value%%2^56)/2^48), as.raw((value%%2^48)/2^40), as.raw((value%%2^40)/2^32), as.raw((value%%2^32)/2^24), as.raw((value%%2^24)/2^16), as.raw((value%%2^16)/2^8), as.raw(value%%2^8)))
-	}
+		value <- as.bigz(as.character(value))
+		two <- as.bigz(2)
+      
+		return(c(as.raw(0xCF), as.raw(as.integer(as.bigz.bigq(value/two^56))), as.raw(as.integer(as.bigz.bigq((value%%two^56)/two^48))), as.raw(as.integer(as.bigz.bigq((value%%two^48)/two^40))), as.raw(as.integer(as.bigz.bigq((value%%two^40)/two^32))), as.raw(as.integer(as.bigz.bigq((value%%two^32)/two^24))), as.raw(as.integer(as.bigz.bigq((value%%two^24)/two^16))), as.raw(as.integer(as.bigz.bigq(value%%two^16)/two^8)), as.raw(as.integer(as.bigz.bigq(value%%two^8)))))
+      }
 
 	.pack_int8 <- function(value) {
 		if ( value < 0 ) {
@@ -58,10 +65,20 @@ function(data) {
 	}
 
 	.pack_int64 <- function(value) {
+		value <- mpfr(as.character(value), precBits = 256)
+		two <- mpfr(2, precBits = 256)
+
 		if ( value < 0 ) {
-			value <- 2^64 + value
+			value <- two^64 + value
 		}
-		return(c(as.raw(0xD3), as.raw(value/2^56), as.raw((value%%2^56)/2^48), as.raw((value%%2^48)/2^40), as.raw((value%%2^40)/2^32), as.raw((value%%2^32)/2^24), as.raw((value%%2^24)/2^16), as.raw((value%%2^16)/2^8), as.raw(value%%2^8)))
+
+        # formatMpfr(result,drop0trailing=TRUE) should be as.character(result) but its not.
+		value <- as.bigz(formatMpfr(value,drop0trailing=TRUE))
+		two <- as.bigz(2)
+      
+		return(c(as.raw(0xD3), as.raw(as.integer(as.bigz.bigq(value/two^56))), as.raw(as.integer(as.bigz.bigq((value%%two^56)/two^48))), as.raw(as.integer(as.bigz.bigq((value%%two^48)/two^40))), as.raw(as.integer(as.bigz.bigq((value%%two^40)/two^32))), as.raw(as.integer(as.bigz.bigq((value%%two^32)/two^24))), as.raw(as.integer(as.bigz.bigq((value%%two^24)/two^16))), as.raw(as.integer(as.bigz.bigq(value%%two^16)/two^8)), as.raw(as.integer(as.bigz.bigq(value%%two^8)))))
+        
+		#return(c(as.raw(0xD3), as.raw(value/two^56), as.raw((value%%two^56)/two^48), as.raw((value%%two^48)/two^40), as.raw((value%%two^40)/two^32), as.raw((value%%two^32)/two^24), as.raw((value%%two^24)/two^16), as.raw((value%%two^16)/two^8), as.raw(value%%two^8)))
 	}
 
 	.pack_float <- function(value) {
@@ -298,10 +315,10 @@ function(data) {
 				result <- c(result, .pack_int32(data))
 			}
 			# int64
-			else if ( data < -2^31 && data >= -2^63 ) {
+			else if ( data < -2^31 && as.integer64(data) >= -as.integer64(2)^63) {
 				result <- c(result, .pack_int64(data))
 			}
-			else if ( data < -2^63 ) {
+			else if ( as.integer64(data) < -as.integer64(2)^63 ) {
 				# not implemented
 			}
 			# uint8
@@ -317,7 +334,7 @@ function(data) {
 				result <- c(result, .pack_uint32(data))
 			}
 			# uint64
-			else if ( data < 2^64 ) {
+			else if ( data < as.integer64(2)^64 ) {
 				result <- c(result, .pack_uint64(data))
 			}
 			

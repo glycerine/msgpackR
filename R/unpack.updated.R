@@ -1,3 +1,7 @@
+
+require(bit64)
+require(Rmpfr)
+
 unpack <-
 function(str) {
 	.unpack_bin <- function(bin) {
@@ -158,15 +162,18 @@ function(str) {
 	}
 
 	.unpack_uint64 <- function() {
-		result <- 0
-		
-		for ( i in seq(56,0,-8) ) {
-			e$.msgpack_index <- e$.msgpack_index + 1
-			result <- result + as.integer(e$.msgpack_data[e$.msgpack_index])*2^i
-		}
+      
+		result <- mpfr(0, precBits = 256)
+		two <- mpfr(2, precBits = 256)
 		
 		e$.msgpack_index <- e$.msgpack_index + 1
-		return(result)
+
+        for ( i in seq(56,0,-8) ) {
+          result <- result + (mpfr(e$.msgpack_data[e$.msgpack_index], precBits=256)*two^i)
+          e$.msgpack_index <- e$.msgpack_index + 1
+        }
+        # formatMpfr(result,drop0trailing=TRUE) should be as.character but its not.
+        return(as.integer64(formatMpfr(result,drop0trailing=TRUE)))
 	}
 
 	.unpack_int8 <- function() {
@@ -222,23 +229,24 @@ function(str) {
 	}
 
 	.unpack_int64 <- function() {
-		result <- 0
+      
+		result <- mpfr(0, precBits = 256)
+		two <- mpfr(2, precBits = 256)
 		
 		e$.msgpack_index <- e$.msgpack_index + 1
 		sign <- ifelse((e$.msgpack_data[e$.msgpack_index] & as.raw(0x80)) != as.raw(0x00), -1, 1)
-		
-		for ( i in seq(56,0,-8) ) {
-			result <- result + as.integer(e$.msgpack_data[e$.msgpack_index])*2^i
-			e$.msgpack_index <- e$.msgpack_index + 1
-		}
-		
-		if ( sign < 0 ) {
-			result <- -2^64 + result
-		}
-		
-		return(result)
-	}
 
+        for ( i in seq(56,0,-8) ) {
+          result <- result + (mpfr(e$.msgpack_data[e$.msgpack_index], precBits=256)*two^i)
+          e$.msgpack_index <- e$.msgpack_index + 1
+        }
+        
+        if ( sign < 0 ) {
+          result <- -two^64 + result
+        }
+
+        return(as.integer64(formatMpfr(result,drop0trailing=TRUE)))
+      }
 
 	.unpack_bin8 <- function() {
 		result <- list()
