@@ -199,24 +199,31 @@ function(data) {
 		}
 		# if the length is more than 2^32-1, 
 		else {
-			# not implemented
+          stop("arrays longer than 2^32 -1 cannot be msgpack encoded.")          
 		}
 		
 		return(result)
 	}
 
-	.pack_raw <- function(data) {
+	.pack_str <- function(data) {
 		n <- length(data)
-	
+        np <- pack(n)
+        enclen <- np[2:length(np)]
+        
 		if ( n <= 31 ) {
-			h <- (as.raw(0xA0) | as.raw(n))
-		}
+          h <- (as.raw(0xA0) | as.raw(n)) # fixstr
+        }
+		else if ( n <= 2^8-1 ) {
+          h <- c(as.raw(0xD9),enclen) # str8 
+        }
 		else if ( n <= 2^16-1 ) {
-			h <- as.raw(0xDA)
+          h <- c(as.raw(0xDA),enclen) # str16
 		}
 		else if ( n <= 2^32-1 ) {
-			h <- as.raw(0xDB)
-		}
+          h <- c(as.raw(0xDB),enclen) # str32
+		} else {
+          stop("character data longer than 2^32 -1 bytes cannot be msgpack encoded.")
+        }
 		
 		result <- c(h, data)
 		return(result)
@@ -290,7 +297,7 @@ function(data) {
 		}
 		# character
 		else if ( is.character(data) ) {
-			result <- c(result, .pack_raw(charToRaw(data)))
+			result <- c(result, .pack_str(charToRaw(data)))
 		}
 		# integer
 		else if ( floor(data) == data ) {
